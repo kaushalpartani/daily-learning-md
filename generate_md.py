@@ -24,7 +24,7 @@ client = Groq(
     api_key=GROQ_API_KEY,
 )
 
-prompt = open('/Users/kaushal/workplace/daily-learning-md/learning_prompt.txt', 'r').read().format(topic=TOPIC)
+prompt = open('learning_prompt.txt', 'r').read().format(topic=TOPIC)
 
 chat_completion = client.chat.completions.create(
     messages=[
