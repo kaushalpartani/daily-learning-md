@@ -46,9 +46,9 @@ def format_markdown(response, date):
 > [!question]- {question}
 > {hint}
 
-```
-Answer:
-```
+---
+#### Answer:
+---
 
 """
 
