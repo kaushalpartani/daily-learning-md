@@ -3,10 +3,22 @@ import yaml
 from groq import Groq
 from datetime import datetime
 
+def get_topic_from_frontmatter(filepath):
+    with open(filepath, 'r') as f:
+        content = f.read()
+        # Parse frontmatter between --- markers
+        if content.startswith('---'):
+            _, frontmatter, _ = content.split('---', 2)
+            metadata = yaml.safe_load(frontmatter)
+            return metadata.get('Topic')
+    return None
+
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-TOPIC = os.environ.get("TOPIC")
-MODEL = os.environ.get("MODEL", "llama3-8b-8192")
 DESTINATION_FILE = os.environ.get("DESTINATION_FILE")
+MODEL = os.environ.get("MODEL", "llama3-8b-8192")
+
+# Get topic from frontmatter instead of environment variable
+TOPIC = get_topic_from_frontmatter(DESTINATION_FILE) or os.environ.get("TOPIC")
 
 client = Groq(
     api_key=GROQ_API_KEY,
@@ -42,12 +54,9 @@ def append_to_markdown_file(formatted_content, filepath):
     with open(filepath, 'a') as f:
         f.write(formatted_content)
 
-# Get today's date
 today = datetime.now().strftime('%Y-%m-%d')
 
-# Format the markdown
 formatted_md = format_markdown(response, today)
 
-# Append to existing markdown file
-markdown_filepath = DESTINATION_FILE  # Update this path
+markdown_filepath = DESTINATION_FILE
 append_to_markdown_file(formatted_md, markdown_filepath)
