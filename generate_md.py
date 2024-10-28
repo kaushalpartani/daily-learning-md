@@ -42,7 +42,8 @@ response = chat_completion.choices[0].message.content
 def format_markdown(response, date):
     data = yaml.load(response, Loader=yaml.FullLoader)
     question, hint = data['question'], data['hint']
-    return f"""### {date}
+    return f"""
+### {date}
 > [!question]- {question}
 > {hint}
 
