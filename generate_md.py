@@ -2,6 +2,7 @@ import os
 import yaml
 from groq import Groq
 from datetime import datetime
+from zoneinfo import ZoneInfo  # Add this import
 
 def get_topic_from_frontmatter(filepath):
     with open(filepath, 'r') as f:
@@ -46,6 +47,7 @@ def format_markdown(response, date):
 > {hint}
 
 ```
+Answer:
 ```
 
 """
@@ -54,7 +56,7 @@ def append_to_markdown_file(formatted_content, filepath):
     with open(filepath, 'a') as f:
         f.write(formatted_content)
 
-today = datetime.now().strftime('%Y-%m-%d')
+today = datetime.now(ZoneInfo('America/Los_Angeles')).strftime('%Y-%m-%d')
 
 formatted_md = format_markdown(response, today)
 
