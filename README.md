@@ -34,3 +34,5 @@ poetry run python generate_md.py
 
 ## TODO
 - Add answer generation. The question + hint generation of tomorrow should answer / grade my answer for today.
+
+- Allow enabled/disabled properties in the MD file headers so that the process can be toggled on or off
