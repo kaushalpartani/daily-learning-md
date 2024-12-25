@@ -5,13 +5,12 @@ from groq import Groq
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-import logging
-logger = logging.getLogger(__name__)
 
 # Constants
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 DESTINATION_FILE = os.environ.get("DESTINATION_FILE")
-MODEL = os.environ.get("MODEL", "llama3-8b-8192")
+MODEL = os.environ.get("MODEL", "mixtral-8x7b-32768")
+print(f"Using Model: {MODEL}")
 DISABLED_KEYS = ['disabled', 'Disabled', 'DISABLED']
 
 def is_disabled(filepath):
@@ -21,8 +20,7 @@ def is_disabled(filepath):
         if content.startswith('---'):
             _, frontmatter, _ = content.split('---', 2)
             metadata = yaml.safe_load(frontmatter)
-            logger.info(f"Metadata: {metadata}")
-            return not any([key in metadata for key in DISABLED_KEYS])
+            return any([key in metadata for key in DISABLED_KEYS])
     return False
 
 def get_topic_from_frontmatter(filepath):
@@ -68,7 +66,7 @@ def append_to_markdown_file(formatted_content, filepath):
 def generate_question():
     """Main function to generate and append a new question."""
     if is_disabled(DESTINATION_FILE):
-        logger.info(f"{DESTINATION_FILE} has disabled flag set. Skipping generation.")
+        print(f"{DESTINATION_FILE} has disabled flag set. Skipping generation.")
         return
     # Get topic from frontmatter or environment
     topic = get_topic_from_frontmatter(DESTINATION_FILE) or os.environ.get("TOPIC")
@@ -88,7 +86,7 @@ def generate_question():
         model=MODEL,
     )
     response = chat_completion.choices[0].message.content
-    logger.info(f"Generated response: {response}")
+    print(f"Generated response: {response}")
 
     # Format and append response
     today = datetime.now(ZoneInfo('America/Los_Angeles')).strftime('%Y-%m-%d')
