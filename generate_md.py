@@ -10,6 +10,17 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 DESTINATION_FILE = os.environ.get("DESTINATION_FILE")
 MODEL = os.environ.get("MODEL", "llama3-8b-8192")
+DISABLED_KEYS = ['disabled', 'Disabled', 'DISABLED']
+
+def is_disabled(filepath):
+    """Check if the file is explicitly disabled by checking for the 'disabled' property in the frontmatter."""
+    with open(filepath, 'r') as f:
+        content = f.read()
+        if content.startswith('---'):
+            _, frontmatter, _ = content.split('---', 2)
+            metadata = yaml.safe_load(frontmatter)
+            return not any([key in metadata for key in DISABLED_KEYS])
+    return False
 
 def get_topic_from_frontmatter(filepath):
     """Extract Topic field from markdown frontmatter."""
@@ -54,6 +65,11 @@ def append_to_markdown_file(formatted_content, filepath):
 def generate_question():
     """Main function to generate and append a new question."""
     # Get topic from frontmatter or environment
+
+    if is_disabled(DESTINATION_FILE):
+        print(f"{DESTINATION_FILE} has disabled flag set. Skipping generation.")
+        return
+
     topic = get_topic_from_frontmatter(DESTINATION_FILE) or os.environ.get("TOPIC")
     
     # Initialize Groq client
