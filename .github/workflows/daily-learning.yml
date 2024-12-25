@@ -44,7 +44,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           for file in content/Daily\ Learning/Daily\ Learning\ --\ *.md; do
-            DESTINATION_FILE="$file" poetry run python generate_md.py
+            DESTINATION_FILE="$file" poetry run python -u generate_md.py
           done
 
       - name: Copy updated files back to private repo
