@@ -44,3 +44,4 @@ poetry run python generate_md.py
 
 ## TODO
 - Add answer generation. The question + hint generation of tomorrow should answer / grade my answer for today.
+- Update to use poetry 2.x instead of current pinned version.
